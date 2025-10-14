@@ -22,22 +22,44 @@ public class AvengersProfile
     {
         Console.WriteLine("Create your Avenger Profile to begin: ");
         Console.WriteLine("Choose which Avenger you want to be (e.g. Iron Man, Thor, Captain America, etc.) ");
-        Console.WriteLine("Please enter your avenger name: ");
-        string username = Console.ReadLine();
 
-        if (registeredUsers.Any(character => character.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
+        string username;
+        do
         {
-            Console.WriteLine($"Sorry the avenger '{username}' you chose is taken right now! Try with another avenger!");
-            return;
-        }
+            Console.WriteLine("Please enter your avenger name: ");
+            username = Console.ReadLine();
 
+            if (string.IsNullOrWhiteSpace(username))
+                Console.WriteLine("Username cannot be empty! Try again!");
+
+            else if (registeredUsers.Any(character => character.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
+            {
+                Console.WriteLine($"Sorry the avenger '{username}' you chose is taken right now! Try with another avenger!");
+                username = null;
+            }
+
+        } while (string.IsNullOrWhiteSpace(username));
         Console.WriteLine($"Welcome {username}, now we continue to password! ");
         string password = CreatePassword();
 
-        Console.WriteLine("Enter you phone number to get a verification code please: ");
-        string twoFacAu = Console.ReadLine();
+        string phoneNumber;
+        do
+        {
+            Console.WriteLine("Enter you phone number with +46 to get a verification code please: ");
+            phoneNumber = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                Console.WriteLine("You need to write in your phone number to continue.");
 
-        registeredUsers.Add(new AvengersProfile(username, password, twoFacAu));
+        } while (string.IsNullOrWhiteSpace(phoneNumber));
+
+        bool verified = TwoFactorCheck(phoneNumber);
+        if (!verified)
+        {
+            Console.WriteLine("Phone number verification failed..");
+            return;
+        }
+
+        registeredUsers.Add(new AvengersProfile(username, password, phoneNumber));
         Console.WriteLine($"Congrats! Avenger created succesfully, {username}!");
     }
 

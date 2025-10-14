@@ -1,6 +1,9 @@
 ﻿using Twilio;
 using DotNetEnv;
 Console.Clear();
+DotNetEnv.Env.Load();
+Console.WriteLine("Twilio SID: " + Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"));
+
 bool isRunning = true;
 AvengersProfile currentHero = null;
 while (isRunning)
