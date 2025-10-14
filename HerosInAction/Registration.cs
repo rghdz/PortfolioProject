@@ -1,4 +1,4 @@
-using DotNetEnv;
+using dotenv.net;
 using Twilio;
 using Twilio.Rest.Verify.V2.Service;
 
@@ -27,7 +27,7 @@ public class AvengersProfile
         do
         {
             Console.WriteLine("Please enter your avenger name: ");
-            username = Console.ReadLine();
+             username = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(username))
                 Console.WriteLine("Username cannot be empty! Try again!");
@@ -90,21 +90,41 @@ public class AvengersProfile
 
     public static bool TwoFactorCheck(string phoneNumber)
     {
-        Env.Load();
+        DotEnv.Load();
+    
+        string accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID")
+            ?? throw new Exception("TWILIO_ACCOUNT_SID not set. Did you add it to User Secrets?");
+        string authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN")
+            ?? throw new Exception("TWILIO_AUTH_TOKEN not set. Did you add it to User Secrets?");
+        string verifySid = Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID")
+            ?? throw new Exception("TWILIO_VERIFY_SERVICE_SID not set. Did you add it to User Secrets?");
 
-        string accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
-        string authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
-        string verifySid = Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID");
+        if (string.IsNullOrWhiteSpace(accountSid) ||
+            string.IsNullOrWhiteSpace(authToken) ||
+            string.IsNullOrWhiteSpace(verifySid))
+        {
+            Console.WriteLine("Twilio credentials are missing. Please check your .env file.");
+            return false;
+        }
 
         TwilioClient.Init(accountSid, authToken);
-        var verification = VerificationResource.Create(to: phoneNumber, channel: "sms", pathServiceSid: verifySid);
-        Console.WriteLine($"A code was sended to your phone number {phoneNumber}!");
+
+        var verification = VerificationResource.Create(
+            to: phoneNumber,
+            channel: "sms",
+            pathServiceSid: verifySid
+        );
+        Console.WriteLine($"A code was sent to your phone number {phoneNumber}!");
         Console.WriteLine("Write in the code here please!");
         string code = Console.ReadLine();
 
-        var check = VerificationCheckResource.Create(to: phoneNumber, code: code, pathServiceSid: verifySid);
+        var check = VerificationCheckResource.Create(
+            to: phoneNumber,
+            code: code,
+            pathServiceSid: verifySid
+        );
 
-        if (check.Status == "Approved")
+        if (check.Status == "approved" || check.Status == "Approved")
         {
             Console.WriteLine("Phone number was verified!");
             return true;

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj": {}
+    "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj": {}
   },
   "projects": {
-    "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj": {
+    "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj",
+        "projectUniqueName": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj",
         "projectName": "HerosInAction",
-        "projectPath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj",
+        "projectPath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj",
         "packagesPath": "/Users/rianaghd/.nuget/packages/",
-        "outputPath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/",
+        "outputPath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/rianaghd/.nuget/NuGet/NuGet.Config"
@@ -43,13 +43,13 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "DotNetEnv": {
-              "target": "Package",
-              "version": "[3.1.1, )"
-            },
             "Twilio": {
               "target": "Package",
               "version": "[7.13.3, )"
+            },
+            "dotenv.net": {
+              "target": "Package",
+              "version": "[4.0.0, )"
             }
           },
           "imports": [
