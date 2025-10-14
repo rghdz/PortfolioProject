@@ -1,3 +1,7 @@
+using DotNetEnv;
+using Twilio;
+using Twilio.Rest.Verify.V2.Service;
+
 public class AvengersProfile
 {
     public static List<AvengersProfile> registeredUsers = new List<AvengersProfile>()
@@ -61,14 +65,35 @@ public class AvengersProfile
 
         }
     }
-    
-    public void TwoFactorCheck()
-    {
-        Console.WriteLine("Please provide your email adress or phone number for two-factor authentication: ");
-        TwoFactorAuthen = Console.ReadLine();
-        Console.WriteLine($"Two-factor authentication set with {TwoFactorAuthen}.");
-    }
 
+    public static bool TwoFactorCheck(string phoneNumber)
+    {
+        Env.Load();
+
+        string accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
+        string authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
+        string verifySid = Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID");
+
+        TwilioClient.Init(accountSid, authToken);
+        var verification = VerificationResource.Create(to: phoneNumber, channel: "sms", pathServiceSid: verifySid);
+        Console.WriteLine($"A code was sended to your phone number {phoneNumber}!");
+        Console.WriteLine("Write in the code here please!");
+        string code = Console.ReadLine();
+
+        var check = VerificationCheckResource.Create(to: phoneNumber, code: code, pathServiceSid: verifySid);
+
+        if (check.Status == "Approved")
+        {
+            Console.WriteLine("Phone number was verified!");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("Wrong code!");
+            return false;
+        }
+    }
+    
 
     public static AvengersProfile LoggedIn()
     {

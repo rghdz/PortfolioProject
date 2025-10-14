@@ -8,3 +8,5 @@
 /Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.dll
 /Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/Debug/net8.0/refint/HerosInAction.dll
 /Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.pdb
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.csproj.AssemblyReference.cache
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.sourcelink.json
