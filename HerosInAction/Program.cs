@@ -1,4 +1,5 @@
 ﻿Console.Clear();
+
 bool isRunning = true;
 AvengersProfile currentHero = null;
 while (isRunning)
@@ -32,7 +33,7 @@ while (isRunning)
         MissionManagement.ShowLoggedInMenu(currentHero);
         string heroChoice = Console.ReadLine();
 
-            switch (heroChoice)
+        switch (heroChoice)
         {
             case "1":
                 MissionManagement.AddMission();
@@ -49,7 +50,7 @@ while (isRunning)
             case "4":
                 MissionManagement.UpdateMission();
                 break;
-                
+
             case "5":
                 Console.WriteLine($"{currentHero.Username} is now logged out.");
                 currentHero = null;

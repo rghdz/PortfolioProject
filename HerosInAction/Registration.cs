@@ -1,3 +1,7 @@
+using dotenv.net;
+using Twilio;
+using Twilio.Rest.Verify.V2.Service;
+
 public class AvengersProfile
 {
     public static List<AvengersProfile> registeredUsers = new List<AvengersProfile>()
@@ -18,22 +22,44 @@ public class AvengersProfile
     {
         Console.WriteLine("Create your Avenger Profile to begin: ");
         Console.WriteLine("Choose which Avenger you want to be (e.g. Iron Man, Thor, Captain America, etc.) ");
-        Console.WriteLine("Please enter your avenger name: ");
-        string username = Console.ReadLine();
 
-        if (registeredUsers.Any(character => character.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
+        string username;
+        do
         {
-            Console.WriteLine($"Sorry the avenger '{username}' you chose is taken right now! Try with another avenger!");
-            return;
-        }
+            Console.WriteLine("Please enter your avenger name: ");
+             username = Console.ReadLine();
 
+            if (string.IsNullOrWhiteSpace(username))
+                Console.WriteLine("Username cannot be empty! Try again!");
+
+            else if (registeredUsers.Any(character => character.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
+            {
+                Console.WriteLine($"Sorry the avenger '{username}' you chose is taken right now! Try with another avenger!");
+                username = null;
+            }
+
+        } while (string.IsNullOrWhiteSpace(username));
         Console.WriteLine($"Welcome {username}, now we continue to password! ");
         string password = CreatePassword();
 
-        Console.WriteLine("Enter you phone number to get a verification code please: ");
-        string twoFacAu = Console.ReadLine();
+        string phoneNumber;
+        do
+        {
+            Console.WriteLine("Enter you phone number with +46 to get a verification code please: ");
+            phoneNumber = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                Console.WriteLine("You need to write in your phone number to continue.");
 
-        registeredUsers.Add(new AvengersProfile(username, password, twoFacAu));
+        } while (string.IsNullOrWhiteSpace(phoneNumber));
+
+        bool verified = TwoFactorCheck(phoneNumber);
+        if (!verified)
+        {
+            Console.WriteLine("Phone number verification failed..");
+            return;
+        }
+
+        registeredUsers.Add(new AvengersProfile(username, password, phoneNumber));
         Console.WriteLine($"Congrats! Avenger created succesfully, {username}!");
     }
 
@@ -61,14 +87,55 @@ public class AvengersProfile
 
         }
     }
-    
-    public void TwoFactorCheck()
-    {
-        Console.WriteLine("Please provide your email adress or phone number for two-factor authentication: ");
-        TwoFactorAuthen = Console.ReadLine();
-        Console.WriteLine($"Two-factor authentication set with {TwoFactorAuthen}.");
-    }
 
+    public static bool TwoFactorCheck(string phoneNumber)
+    {
+        DotEnv.Load();
+    
+        string accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID")
+            ?? throw new Exception("TWILIO_ACCOUNT_SID not set. Did you add it to User Secrets?");
+        string authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN")
+            ?? throw new Exception("TWILIO_AUTH_TOKEN not set. Did you add it to User Secrets?");
+        string verifySid = Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID")
+            ?? throw new Exception("TWILIO_VERIFY_SERVICE_SID not set. Did you add it to User Secrets?");
+
+        if (string.IsNullOrWhiteSpace(accountSid) ||
+            string.IsNullOrWhiteSpace(authToken) ||
+            string.IsNullOrWhiteSpace(verifySid))
+        {
+            Console.WriteLine("Twilio credentials are missing. Please check your .env file.");
+            return false;
+        }
+
+        TwilioClient.Init(accountSid, authToken);
+
+        var verification = VerificationResource.Create(
+            to: phoneNumber,
+            channel: "sms",
+            pathServiceSid: verifySid
+        );
+        Console.WriteLine($"A code was sent to your phone number {phoneNumber}!");
+        Console.WriteLine("Write in the code here please!");
+        string code = Console.ReadLine();
+
+        var check = VerificationCheckResource.Create(
+            to: phoneNumber,
+            code: code,
+            pathServiceSid: verifySid
+        );
+
+        if (check.Status == "approved" || check.Status == "Approved")
+        {
+            Console.WriteLine("Phone number was verified!");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("Wrong code!");
+            return false;
+        }
+    }
+    
 
     public static AvengersProfile LoggedIn()
     {
