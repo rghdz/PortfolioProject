@@ -4,7 +4,7 @@ public class MissionManagement
 {
     public static List<MissionManagement> missions = new List<MissionManagement>()
     {
-        new MissionManagement("Save New York", "Stop the Chitauri invasion in New York City.", new DateTime(2025, 10, 10, 18, 0, 0), "High"),
+        new MissionManagement("Save Ne York", "Stop the Chitauri invasion in New York City.", new DateTime(2025, 10, 10, 18, 0, 0), "High"),
         new MissionManagement("Retrieve Infinity Stones", "Collect all Infinity Stones before Thanos does.", new DateTime(2025, 11, 5, 12, 0, 0), "High"),
         new MissionManagement("Protect Wakanda", "Defend Wakanda from the incoming enemy army.", new DateTime(2025, 10, 20, 15, 30, 0), "Medium"),
         new MissionManagement("Investigate Strange Activity", "Investigate mysterious magical activity in New York.", new DateTime(2025, 10, 15, 9, 0, 0), "Low"),

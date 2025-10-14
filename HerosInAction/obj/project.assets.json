@@ -1838,11 +1838,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj",
+      "projectUniqueName": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/HerosInAction.csproj",
       "projectName": "HerosInAction",
-      "projectPath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/HerosInAction.csproj",
+      "projectPath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/HerosInAction.csproj",
       "packagesPath": "/Users/rianaghd/.nuget/packages/",
-      "outputPath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/",
+      "outputPath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/rianaghd/.nuget/NuGet/NuGet.Config"
