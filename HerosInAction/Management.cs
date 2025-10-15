@@ -4,11 +4,14 @@ public class MissionManagement
 {
     public static List<MissionManagement> missions = new List<MissionManagement>()
     {
-        new MissionManagement("Save Ne York", "Stop the Chitauri invasion in New York City.", new DateTime(2025, 10, 10, 18, 0, 0), "High"),
-        new MissionManagement("Retrieve Infinity Stones", "Collect all Infinity Stones before Thanos does.", new DateTime(2025, 11, 5, 12, 0, 0), "High"),
-        new MissionManagement("Protect Wakanda", "Defend Wakanda from the incoming enemy army.", new DateTime(2025, 10, 20, 15, 30, 0), "Medium"),
-        new MissionManagement("Investigate Strange Activity", "Investigate mysterious magical activity in New York.", new DateTime(2025, 10, 15, 9, 0, 0), "Low"),
-        new MissionManagement("Escort VIPs", "Protect important civilians during evacuation.", new DateTime(2025, 10, 12, 14, 0, 0), "Medium")
+        new MissionManagement("Retrieve Infinity Stones before Thanos", "Tony Stark must Collect all Infinity stones from Hisingen, Vasa, Frölunda, Angered, Göteborg Centrum.", new DateTime(2025, 10, 20, 13, 0, 0), "High"),
+        new MissionManagement("Stop alien drones over Liseberg", "Thor must stop a fleet of small alien drones hovering over the amusement park Liseberg.", new DateTime(2025, 10, 18, 11, 0, 0), "High"),
+        new MissionManagement("Evacuate civillians from Nordstan", "Lead the evacuation of civilians from Nordstan during a alien invasion.", new DateTime(2025, 10, 5, 12, 0, 0), "High"),
+        new MissionManagement("Crush Chitauri Leviathans at Slottskogen", "Hulk must deal with giant alien robots attacking on Slottskogen Park.", new DateTime(2025, 10, 8, 14, 0, 0), "High"),
+        new MissionManagement("Protect NBI/Handelsakademin", "Defend NBI from the incoming enemy army.", new DateTime(2025, 10, 20, 15, 30, 0), "Medium"),
+        new MissionManagement("Investigate Strange Activity", "Investigate mysterious magical activity in Opera.", new DateTime(2025, 10, 15, 9, 0, 0), "Low"),
+        new MissionManagement("Escort VIPs", "Protect important civilians during evacuation.", new DateTime(2025, 10, 12, 14, 0, 0), "Medium"),
+        new MissionManagement("Seal dimentional rift over Karla tower", "Strange must close a magical rift above the Karla tower before aliens come through.", new DateTime(2025, 19, 12, 1, 0, 0), "Medium")
     };
 
     public string Title;
@@ -25,6 +28,7 @@ public class MissionManagement
         Priority = priority;
         IsCompleted = isCompleted;
     }
+    
 
 
     public static void AddMission()
