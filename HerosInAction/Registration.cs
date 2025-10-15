@@ -6,7 +6,7 @@ public class AvengersProfile
 {
     public static List<AvengersProfile> registeredUsers = new List<AvengersProfile>()
     {
-        new AvengersProfile("Iron Man", "Ironman22!", "0948857842")
+        new AvengersProfile("Iron Man", "Ironman22!", "+46720462003")
     };
     public string Username;
     private string Password;
@@ -20,6 +20,17 @@ public class AvengersProfile
 
     public static void CreateUsername()
     {
+        List<string> avengerRoles = new List<string>
+        {
+            "Iron Man",
+            "Thor",
+            "Captain America",
+            "Hulk",
+            "Black Widow",
+            "Spider Man",
+            "Doctor Strange",
+            "Hawkeye"
+        };
         Console.WriteLine("Create your Avenger Profile to begin: ");
         Console.WriteLine("Choose which Avenger you want to be (e.g. Iron Man, Thor, Captain America, etc.) ");
 
