@@ -14,15 +14,14 @@ public class MissionManagement
         new MissionManagement("Seal dimentional rift over Karla tower", "Strange must close a magical rift above the Karla tower before aliens come through.", new DateTime(2025, 19, 12, 1, 0, 0), "Medium", "Doctor Strange")
     };
 
-    public static MissionManagement GetMissionForAvenger(string avengerRole)
+    public static MissionManagement? GetMissionForAvenger(string avengerRole)
     {
         if (string.IsNullOrWhiteSpace(avengerRole) || missions == null || missions.Count == 0)
             return null;
 
         string roleTrimmed = avengerRole.Trim();
         
-        return missions.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.AvengerRole) &&
-        m.AvengerRole.Trim().Equals(avengerRole.Trim(), StringComparison.OrdinalIgnoreCase));
+        return missions.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.AvengerRole) && m.AvengerRole.Trim().Equals(avengerRole.Trim(), StringComparison.OrdinalIgnoreCase));
     }
 
     public string Title;
