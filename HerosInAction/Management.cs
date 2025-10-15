@@ -6,7 +6,7 @@ public class MissionManagement
     {
         new MissionManagement("Retrieve Infinity Stones before Thanos", "Tony Stark must Collect all Infinity stones from Hisingen, Vasa, Frölunda, Angered, Göteborg Centrum.", new DateTime(2025, 10, 20, 13, 0, 0), "High", "Iron Man"),
         new MissionManagement("Stop alien drones over Liseberg", "Thor must stop a fleet of small alien drones hovering over the amusement park Liseberg.", new DateTime(2025, 10, 18, 11, 0, 0), "High", "Thor"),
-        new MissionManagement("Evacuate civillians from Nordstan", "Lead the evacuation of civilians from Nordstan during a alien invasion.", new DateTime(2025, 10, 5, 12, 0, 0), "High", "Captian America"),
+        new MissionManagement("Evacuate civillians from Nordstan", "Lead the evacuation of civilians from Nordstan during a alien invasion.", new DateTime(2025, 10, 5, 12, 0, 0), "High", "Captain America"),
         new MissionManagement("Crush Chitauri Leviathans at Slottskogen", "Hulk must deal with giant alien robots attacking on Slottskogen Park.", new DateTime(2025, 10, 8, 14, 0, 0), "High", "Hulk"),
         new MissionManagement("Protect NBI/Handelsakademin", "Defend NBI from the incoming enemy army.", new DateTime(2025, 10, 20, 15, 30, 0), "Medium", "Black Widow"),
         new MissionManagement("Investigate Strange Activity", "Investigate mysterious magical activity in Opera.", new DateTime(2025, 10, 15, 9, 0, 0), "Low", "Spider Man"),
@@ -16,7 +16,10 @@ public class MissionManagement
 
     public static MissionManagement GetMissionForAvenger(string avengerRole)
     {
-        return missions.FirstOrDefault(m => m.AvengerRole.Equals(avengerRole, StringComparison.OrdinalIgnoreCase));
+        if (string.IsNullOrWhiteSpace(avengerRole))
+            return null;
+        return missions.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.AvengerRole) &&
+        m.AvengerRole.Trim().Equals(avengerRole.Trim(), StringComparison.OrdinalIgnoreCase));
     }
 
     public string Title;
