@@ -1,1 +1,5 @@
 .env
+
+#igga build maps
+bin/
+obj/

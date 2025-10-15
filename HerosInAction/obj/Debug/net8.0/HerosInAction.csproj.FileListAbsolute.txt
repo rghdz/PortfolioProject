@@ -26,3 +26,15 @@
 /Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.pdb
 /Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.genruntimeconfig.cache
 /Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/PortfolioProject/HerosInAction/obj/Debug/net8.0/ref/HerosInAction.dll
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/bin/Debug/net8.0/HerosInAction
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/bin/Debug/net8.0/HerosInAction.dll
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/bin/Debug/net8.0/HerosInAction.pdb
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.csproj.AssemblyReference.cache
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.GeneratedMSBuildEditorConfig.editorconfig
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.AssemblyInfoInputs.cache
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.AssemblyInfo.cs
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.csproj.CoreCompileInputs.cache
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.sourcelink.json
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.dll
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/refint/HerosInAction.dll
+/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/obj/Debug/net8.0/HerosInAction.pdb

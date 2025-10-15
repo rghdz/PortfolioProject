@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5IPvWTxhyKA=",
+  "dgSpecHash": "uIsyAzgUFNE=",
   "success": true,
-  "projectFilePath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/HerosInAction.csproj",
+  "projectFilePath": "/Users/rianaghd/Desktop/systemutvecklare25/Inlämningar/Portfolio/PortfolioProject/HerosInAction/HerosInAction.csproj",
   "expectedPackageFiles": [
     "/Users/rianaghd/.nuget/packages/dotenv.net/4.0.0/dotenv.net.4.0.0.nupkg.sha512",
     "/Users/rianaghd/.nuget/packages/microsoft.bcl.memory/9.0.0/microsoft.bcl.memory.9.0.0.nupkg.sha512",

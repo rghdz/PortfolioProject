@@ -103,7 +103,7 @@ public class AvengersProfile
             string.IsNullOrWhiteSpace(authToken) ||
             string.IsNullOrWhiteSpace(verifySid))
         {
-            Console.WriteLine("Twilio credentials are missing. Please check your .env file.");
+            Console.WriteLine("Having issues..");
             return false;
         }
 
