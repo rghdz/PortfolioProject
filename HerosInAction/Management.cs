@@ -40,8 +40,6 @@ public class MissionManagement
         AvengerRole = avengerRole;
         IsCompleted = isCompleted;
     }
-    
-
 
     public static void AddMission()
     {
