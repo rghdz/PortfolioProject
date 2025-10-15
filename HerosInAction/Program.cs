@@ -44,7 +44,7 @@ while (isRunning)
                 break;
 
             case "3":
-                MissionManagement.CompleteMission();
+                MissionManagement.CompleteMission(currentHero);
                 break;
 
             case "4":
