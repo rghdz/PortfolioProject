@@ -143,7 +143,7 @@ public class MissionManagement
         Console.WriteLine("Write your note here or leave blank if you don't feel like it:");
         string newNote = Console.ReadLine();
 
-        if (string.IsNullOrWhiteSpace(newNote))
+        if (!string.IsNullOrWhiteSpace(newNote))
         {
             mission.HeroNote = newNote;
             Console.WriteLine("Your personal note has been saved!");
@@ -171,7 +171,7 @@ public class MissionManagement
         Console.WriteLine("1. Add mission: ");
         Console.WriteLine("2. Show all missions: ");
         Console.WriteLine("3. Complete mission: ");
-        Console.WriteLine("4. Update mission: ");
+        Console.WriteLine("4. Update mission / Add note: ");
         Console.WriteLine("5. Logout: ");
         Console.Write("Choose an option: ");
     }
