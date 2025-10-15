@@ -30,8 +30,9 @@ public class MissionManagement
     public string Priority;
     public bool IsCompleted;
     public string AvengerRole;
+    public string HeroNote;
 
-    public MissionManagement(string title, string description, DateTime dueDate, string priority, string avengerRole, bool isCompleted = false)
+    public MissionManagement(string title, string description, DateTime dueDate, string priority, string avengerRole, bool isCompleted = false, string heroNote = "")
     {
         Title = title;
         Description = description;
@@ -39,6 +40,7 @@ public class MissionManagement
         Priority = priority;
         AvengerRole = avengerRole;
         IsCompleted = isCompleted;
+        HeroNote = heroNote;
     }
 
     public static void AddMission()
@@ -125,14 +127,31 @@ public class MissionManagement
     }
     
 
-    public static void UpdateMission()
+    public static void UpdateMission(AvengersProfile hero)
     {
-        Console.WriteLine("");
+        var mission = GetMissionForAvenger(hero.Username);
+        if (mission == null)
+        {
+            Console.WriteLine("You have no mission to update!");
+        }
+        Console.WriteLine($"Your current mission: {mission.Title}");
+        Console.WriteLine("Would you like to add or update a reminder/comment for this mission?");
+        Console.WriteLine("Write your note here or leave blank if you don't feel like it:");
+        string newNote = Console.ReadLine();
 
+        if (string.IsNullOrWhiteSpace(newNote))
+        {
+            Console.WriteLine("No note added. Returning to menu...");
+            return;
+        }
+        mission.HeroNote = newNote;
+        Console.WriteLine("Your personal note has been saved!");
     }
-    public static void LogOut()
+    public static void LogOut(AvengersProfile currentHero)
     {
-        Console.WriteLine("");
+        Console.Clear();
+        Console.WriteLine($"Avenger {currentHero.Username} has logged out!");
+        Thread.Sleep(1500);
 
     }
 

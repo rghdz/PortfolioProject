@@ -48,11 +48,11 @@ while (isRunning)
                 break;
 
             case "4":
-                MissionManagement.UpdateMission();
+                MissionManagement.UpdateMission(currentHero);
                 break;
 
             case "5":
-                Console.WriteLine($"{currentHero.Username} is now logged out.");
+                MissionManagement.LogOut(currentHero);
                 currentHero = null;
                 break;
 
