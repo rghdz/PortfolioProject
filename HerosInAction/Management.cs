@@ -125,7 +125,6 @@ public class MissionManagement
         mission.IsCompleted = true;
         Console.WriteLine($"Mission '{mission.Title}' compeleted successfully!");
     }
-    
 
     public static void UpdateMission(AvengersProfile hero)
     {
@@ -133,20 +132,29 @@ public class MissionManagement
         if (mission == null)
         {
             Console.WriteLine("You have no mission to update!");
+            return;
         }
         Console.WriteLine($"Your current mission: {mission.Title}");
+        if (!string.IsNullOrWhiteSpace(mission.HeroNote))
+        {
+            Console.WriteLine($"Current note: {mission.HeroNote}");
+        }
         Console.WriteLine("Would you like to add or update a reminder/comment for this mission?");
         Console.WriteLine("Write your note here or leave blank if you don't feel like it:");
         string newNote = Console.ReadLine();
 
         if (string.IsNullOrWhiteSpace(newNote))
         {
-            Console.WriteLine("No note added. Returning to menu...");
-            return;
+            mission.HeroNote = newNote;
+            Console.WriteLine("Your personal note has been saved!");
         }
-        mission.HeroNote = newNote;
-        Console.WriteLine("Your personal note has been saved!");
+        else
+        {
+            Console.WriteLine("No noote added!");
+        }
+
     }
+
     public static void LogOut(AvengersProfile currentHero)
     {
         Console.Clear();
