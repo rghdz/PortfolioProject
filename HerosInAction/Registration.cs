@@ -34,12 +34,13 @@ public class AvengersProfile
         Console.WriteLine("Create your Avenger Profile to begin: ");
 
         string username = null;
-        do
+        while (string.IsNullOrWhiteSpace(username))
         {
             Console.WriteLine("Available Avengers: ");
             for (int i = 0; i < avengerRoles.Count; i++)
             {
                 bool taken = registeredUsers.Any(u => u.Username.Equals(avengerRoles[i], StringComparison.OrdinalIgnoreCase));
+                Console.WriteLine($"{i + 1}. {avengerRoles[i]} {(taken ? "- Taken" : " ")}");
             }
 
             Console.WriteLine("Enter the number of which Avenger you want to be: ");
@@ -61,7 +62,7 @@ public class AvengersProfile
             {
                 username = chosenAvenger;
             }
-            
+
         } while (string.IsNullOrWhiteSpace(username));
         Console.WriteLine($"Welcome {username}, now we continue to password! ");
         string password = CreatePassword();
