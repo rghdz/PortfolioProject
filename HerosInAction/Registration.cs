@@ -6,7 +6,7 @@ public class AvengersProfile
 {
     public static List<AvengersProfile> registeredUsers = new List<AvengersProfile>()
     {
-        new AvengersProfile("Iron Man", "Ironman22!", "0948857842")
+        new AvengersProfile("Iron Man", "Ironman22!", "+46720462003")
     };
     public string Username;
     private string Password;
@@ -20,22 +20,47 @@ public class AvengersProfile
 
     public static void CreateUsername()
     {
-        Console.WriteLine("Create your Avenger Profile to begin: ");
-        Console.WriteLine("Choose which Avenger you want to be (e.g. Iron Man, Thor, Captain America, etc.) ");
-
-        string username;
-        do
+        List<string> avengerRoles = new List<string>
         {
-            Console.WriteLine("Please enter your avenger name: ");
-             username = Console.ReadLine();
+            "Iron Man",
+            "Thor",
+            "Captain America",
+            "Hulk",
+            "Black Widow",
+            "Spider Man",
+            "Doctor Strange",
+            "Hawkeye"
+        };
+        Console.WriteLine("Create your Avenger Profile to begin: ");
 
-            if (string.IsNullOrWhiteSpace(username))
-                Console.WriteLine("Username cannot be empty! Try again!");
-
-            else if (registeredUsers.Any(character => character.Username.Equals(username, StringComparison.OrdinalIgnoreCase)))
+        string username = null;
+        while (string.IsNullOrWhiteSpace(username))
+        {
+            Console.WriteLine("Available Avengers: ");
+            for (int i = 0; i < avengerRoles.Count; i++)
             {
-                Console.WriteLine($"Sorry the avenger '{username}' you chose is taken right now! Try with another avenger!");
-                username = null;
+                bool taken = registeredUsers.Any(u => u.Username.Equals(avengerRoles[i], StringComparison.OrdinalIgnoreCase));
+                Console.WriteLine($"{i + 1}. {avengerRoles[i]} {(taken ? "- Taken" : " ")}");
+            }
+
+            Console.WriteLine("Enter the number of which Avenger you want to be: ");
+            string input = Console.ReadLine();
+            if (!int.TryParse(input, out int choice) || choice < 1 || choice > avengerRoles.Count)
+            {
+                Console.WriteLine("Invalid choice, try again!");
+                continue;
+            }
+
+            string chosenAvenger = avengerRoles[choice - 1];
+            bool alreadyTaken = registeredUsers.Any(u => u.Username.Equals(chosenAvenger, StringComparison.OrdinalIgnoreCase));
+
+            if (alreadyTaken)
+            {
+                Console.WriteLine($"Sorry {chosenAvenger} is already taken! Choose another one!");
+            }
+            else
+            {
+                username = chosenAvenger;
             }
 
         } while (string.IsNullOrWhiteSpace(username));
