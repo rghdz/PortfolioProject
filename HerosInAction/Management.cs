@@ -16,8 +16,11 @@ public class MissionManagement
 
     public static MissionManagement GetMissionForAvenger(string avengerRole)
     {
-        if (string.IsNullOrWhiteSpace(avengerRole))
+        if (string.IsNullOrWhiteSpace(avengerRole) || missions == null || missions.Count == 0)
             return null;
+
+        string roleTrimmed = avengerRole.Trim();
+        
         return missions.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.AvengerRole) &&
         m.AvengerRole.Trim().Equals(avengerRole.Trim(), StringComparison.OrdinalIgnoreCase));
     }
