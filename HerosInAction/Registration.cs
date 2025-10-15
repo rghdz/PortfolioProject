@@ -28,8 +28,8 @@ public class AvengersProfile
             "Hulk",
             "Black Widow",
             "Spider Man",
-            "Doctor Strange",
-            "Hawkeye"
+            "Hawkeye",
+            "Doctor Strange"
         };
         Console.WriteLine("Create your Avenger Profile to begin: ");
 
