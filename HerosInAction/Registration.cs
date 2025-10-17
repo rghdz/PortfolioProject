@@ -1,6 +1,7 @@
-using dotenv.net;
 using Twilio;
 using Twilio.Rest.Verify.V2.Service;
+using Microsoft.Extensions.Configuration;
+
 
 public class AvengersProfile
 {
@@ -115,48 +116,55 @@ public class AvengersProfile
 
     public static bool TwoFactorCheck(string phoneNumber)
     {
-        DotEnv.Load();
-    
-        string accountSid = Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID")
-            ?? throw new Exception("TWILIO_ACCOUNT_SID not set. Did you add it to User Secrets?");
-        string authToken = Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN")
-            ?? throw new Exception("TWILIO_AUTH_TOKEN not set. Did you add it to User Secrets?");
-        string verifySid = Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID")
-            ?? throw new Exception("TWILIO_VERIFY_SERVICE_SID not set. Did you add it to User Secrets?");
+        var config = new ConfigurationBuilder()
+        .AddUserSecrets<Program>() // laddar från user secrets
+        .AddEnvironmentVariables() // laddar systemets miljövariabler
+        .Build();
 
+        // Hämta värden
+        string accountSid = config["TWILIO_ACCOUNT_SID"];
+        string authToken = config["TWILIO_AUTH_TOKEN"];
+        string verifySid = config["TWILIO_VERIFY_SERVICE_SID"];
+
+        // Felskydd
         if (string.IsNullOrWhiteSpace(accountSid) ||
             string.IsNullOrWhiteSpace(authToken) ||
             string.IsNullOrWhiteSpace(verifySid))
         {
-            Console.WriteLine("Having issues..");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("❌ Missing Twilio credentials! Make sure they're added via User Secrets or .env.");
+            Console.ResetColor();
             return false;
         }
 
+        // Initiera Twilio
         TwilioClient.Init(accountSid, authToken);
 
+        // Skicka SMS
         var verification = VerificationResource.Create(
             to: phoneNumber,
             channel: "sms",
             pathServiceSid: verifySid
         );
-        Console.WriteLine($"A code was sent to your phone number {phoneNumber}!");
-        Console.WriteLine("Write in the code here please!");
+
+        Console.WriteLine($"✅ Code sent to {phoneNumber}. Enter the code:");
         string code = Console.ReadLine();
 
+        // Kontrollera koden
         var check = VerificationCheckResource.Create(
             to: phoneNumber,
             code: code,
             pathServiceSid: verifySid
         );
 
-        if (check.Status == "approved" || check.Status == "Approved")
+        if (check.Status.Equals("approved", StringComparison.OrdinalIgnoreCase))
         {
-            Console.WriteLine("Phone number was verified!");
+            Console.WriteLine("🎉 Phone number verified!");
             return true;
         }
         else
         {
-            Console.WriteLine("Wrong code!");
+            Console.WriteLine("❌ Wrong code!");
             return false;
         }
     }

@@ -1,4 +1,6 @@
-﻿Console.Clear();
+﻿using System;
+using Microsoft.Extensions.Configuration;
+Console.Clear();
 
 bool isRunning = true;
 AvengersProfile currentHero = null;
