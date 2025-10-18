@@ -1,145 +1,103 @@
 using Twilio;
 using Twilio.Rest.Verify.V2.Service;
+using Twilio.Types;
 using Microsoft.Extensions.Configuration;
+
 
 
 public class AvengersProfile
 {
     public static List<AvengersProfile> registeredUsers = new List<AvengersProfile>()
     {
-        new AvengersProfile("Iron Man", "Ironman22!", "+46720462003")
+        new AvengersProfile("Iron Man", "Ironman22!", "+46720462003", " ")
     };
     public string Username;
     private string Password;
     public string TwoFactorAuthen;
-    public AvengersProfile(string username, string password, string twoFactorAuthen)
+    public string Email;
+    public AvengersProfile(string username, string password, string twoFactorAuthen, string email)
     {
         Username = username;
         Password = password;
         TwoFactorAuthen = twoFactorAuthen;
+        Email = email;
     }
 
-    public static async Task CreateUsernameAsync()
+public static async Task CreateUsernameAsync()
+{
+    Console.WriteLine("Before you choose an Avenger identity, Jarvis will analyze your personality...");
+    string suggestedRole = JarvisRoleMatcher.SuggestRole();
+
+    var jarvis = new JarvisChat();
+    jarvis.PrintJarvis($"You are registering as {suggestedRole}!");
+
+    string username = suggestedRole;
+
+    // Jarvis ger kort och kul kommentar
+    string aiResponse = await jarvis.AskJarvisAsync($"User chose the role {username}. Give a short, funny, inspiring comment as Jarvis in English.");
+    jarvis.PrintJarvis(aiResponse);
+
+    // Lösenord
+    Console.WriteLine($"Welcome {username}, now we continue to password!");
+    string password = CreatePassword();
+
+    // Telefonnummer + 2FA
+    string phoneNumber;
+    do
     {
-        Console.WriteLine("Before you choose an Avenger identity, Jarvis will analyze your personality...");
-        string suggestedRole = JarvisRoleMatcher.SuggestRole(); // <-- Ny metod (läggs till i separat fil)
+        Console.WriteLine("Enter your phone number with +46 to get a verification code please:");
+        phoneNumber = Console.ReadLine();
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+            Console.WriteLine("You need to write in your phone number to continue.");
+    } while (string.IsNullOrWhiteSpace(phoneNumber));
 
-        Console.WriteLine($"\nDo you want to register as {suggestedRole}? (y/n)");
-        string answer = Console.ReadLine()?.ToLower();
-
-        string username;
-
-        if (answer == "y")
-        {
-            // Om användaren accepterar Jarvis förslag direkt
-            username = suggestedRole;
-        }
-        else
-        {
-            // 🧠 Annars går vi vidare till din gamla kod för manuell rollval
-            List<string> avengerRoles = new List<string>
-            {
-                "Iron Man",
-                "Thor",
-                "Captain America",
-                "Hulk",
-                "Black Widow",
-                "Spider Man",
-                "Hawkeye",
-                "Doctor Strange"
-            };
-
-            username = null;
-            while (string.IsNullOrWhiteSpace(username))
-            {
-                Console.WriteLine("Available Avengers: ");
-                for (int i = 0; i < avengerRoles.Count; i++)
-                {
-                    bool taken = registeredUsers.Any(u => u.Username.Equals(avengerRoles[i], StringComparison.OrdinalIgnoreCase));
-                    Console.WriteLine($"{i + 1}. {avengerRoles[i]} {(taken ? "- Taken" : " ")}");
-                }
-
-                Console.WriteLine("Enter the number of which Avenger you want to be: ");
-                string input = Console.ReadLine();
-
-                if (!int.TryParse(input, out int choice) || choice < 1 || choice > avengerRoles.Count)
-                {
-                    Console.WriteLine("Invalid choice, try again!");
-                    continue;
-                }
-
-                string chosenAvenger = avengerRoles[choice - 1];
-                bool alreadyTaken = registeredUsers.Any(u => u.Username.Equals(chosenAvenger, StringComparison.OrdinalIgnoreCase));
-
-                if (alreadyTaken)
-                {
-                    Console.WriteLine($"Sorry {chosenAvenger} is already taken! Choose another one!");
-                }
-                else
-                {
-                    username = chosenAvenger;
-                }
-
-            }
-        }
-        var jarvis = new JarvisChat();
-        string aiResponse = await jarvis.AskJarvisAsync($"Användaren valde rollen {username}. Ge en kort, rolig och inspirerande kommentar som Jarvis, på svenska.");
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"Jarvis (AI): {aiResponse}");
-        Console.ResetColor();
-        
-        
-        Console.WriteLine($"Welcome {username}, now we continue to password!");
-        string password = CreatePassword();
-
-        string phoneNumber;
-        do
-        {
-            Console.WriteLine("Enter your phone number with +46 to get a verification code please:");
-            phoneNumber = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(phoneNumber))
-                Console.WriteLine("You need to write in your phone number to continue.");
-        } while (string.IsNullOrWhiteSpace(phoneNumber));
-
-        bool verified = TwoFactorCheck(phoneNumber);
-        if (!verified)
-        {
-            Console.WriteLine("Phone number verification failed..");
-            return;
-        }
-
-        registeredUsers.Add(new AvengersProfile(username, password, phoneNumber));
-        Console.WriteLine($"Congrats! Avenger created successfully, {username}!");  
+    bool verified = TwoFactorCheck(phoneNumber);
+    if (!verified)
+    {
+        Console.WriteLine("Phone number verification failed..");
+        return;
     }
 
-
-    private static string CreatePassword()
+    // 🔹 Fråga efter e-postadress
+    string email;
+    do
     {
-        while (true)
+        Console.WriteLine("Enter your email address (for mission updates):");
+        email = Console.ReadLine()?.Trim();
+        if (string.IsNullOrWhiteSpace(email))
+            Console.WriteLine("You must provide a valid email to receive mission updates.");
+    } while (string.IsNullOrWhiteSpace(email));
+
+    // Lägg till användaren i listan
+    registeredUsers.Add(new AvengersProfile(username, password, phoneNumber, email));
+    Console.WriteLine($"Congrats! Avenger created successfully, {username}!");
+}
+private static string CreatePassword()
+{
+    while (true)
+    {
+        Console.WriteLine("Choose a strong password to compelete your registration: ");
+        string passW = Console.ReadLine();
+
+        bool valid = passW.Length >= 6 &&
+                     passW.Any(char.IsUpper) &&
+                     passW.Any(char.IsLower) &&
+                     passW.Any(char.IsDigit) &&
+                     passW.Any(c => "!@#$%^&*()_+-=[]{}.<>/?-".Contains(c));
+
+        if (valid)
         {
-            Console.WriteLine("Choose a strong password to compelete your registration: ");
-            string passW = Console.ReadLine();
+            Console.WriteLine("Thank you, Your password is strong enough!");
+            return passW;
+        }
 
-            bool valid = passW.Length >= 6 &&
-                         passW.Any(char.IsUpper) &&
-                         passW.Any(char.IsLower) &&
-                         passW.Any(char.IsDigit) &&
-                         passW.Any(c => "!@#$%^&*()_+-=[]{}.<>/?-".Contains(c));
-
-            if (valid)
-            {
-                Console.WriteLine("Thank you, Your password is strong enough!");
-                return passW;
-            }
-
-            Console.WriteLine("Not strong enough please try again!");
-
+        Console.WriteLine("Not strong enough please try again!");
         }
     }
 
-    public static bool TwoFactorCheck(string phoneNumber)
-    {
-        var config = new ConfigurationBuilder()
+public static bool TwoFactorCheck(string phoneNumber)
+{
+    var config = new ConfigurationBuilder()
         .AddUserSecrets<Program>() // laddar från user secrets
         .AddEnvironmentVariables() // laddar systemets miljövariabler
         .Build();
@@ -191,7 +149,6 @@ public class AvengersProfile
             return false;
         }
     }
-    
 
     public static AvengersProfile LoggedIn()
     {

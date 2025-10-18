@@ -24,7 +24,7 @@ public class JarvisChat
             model = "gpt-4o-mini", // eller "gpt-4o" om du vill ha full version
             messages = new[]
             {
-                new { role = "system", content = "Du är Jarvis, en smart och charmig AI-assistent som hjälper användaren att hitta rätt Avengers-roll baserat på deras personlighet. Ställ frågor och ge förslag med humor och stil." },
+                new { role = "system", content = "You are Jarvis, a witty and intelligent AI assistant who helps users discover their ideal Avenger role and find suitable missions. Always respond with charm and confidence." },
                 new { role = "user", content = userMessage }
             }
         };
@@ -46,5 +46,11 @@ public class JarvisChat
             .GetString();
 
         return content;
+    }
+    public void PrintJarvis(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"Jarvis: {message}");
+        Console.ResetColor();
     }
 }

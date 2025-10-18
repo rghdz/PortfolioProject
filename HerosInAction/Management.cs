@@ -1,3 +1,5 @@
+using MailKit.Net.Smtp;
+using MimeKit;
 public class MissionManagement
 {
     public static List<MissionManagement> missions = new List<MissionManagement>()
@@ -18,8 +20,8 @@ public class MissionManagement
             return null;
 
         string roleTrimmed = avengerRole.Trim();
-        
-        return missions.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.AvengerRole) && m.AvengerRole.Trim().Equals(avengerRole.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        return missions.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.AvengerRole) && m.AvengerRole.Trim().Equals(avengerRole.Trim(), StringComparison.OrdinalIgnoreCase) && !m.IsCompleted);
     }
 
     public string Title;
@@ -104,25 +106,78 @@ public class MissionManagement
         Console.WriteLine();
     }
 
-
-    public static void CompleteMission(AvengersProfile hero)
+public static async Task CompleteMission(AvengersProfile hero)
+{
+    var mission = GetMissionForAvenger(hero.Username);
+    if (missions == null || mission == null)
     {
-        var mission = GetMissionForAvenger(hero.Username);
-        if (missions == null)
-        {
-            Console.WriteLine("No missions to complete!");
-            return;
-        }
-
-        if (mission.IsCompleted)
-        {
-            Console.WriteLine("Mission Already completed!");
-            return;
-        }
-
-        mission.IsCompleted = true;
-        Console.WriteLine($"Mission '{mission.Title}' compeleted successfully!");
+        Console.WriteLine("No missions to complete!");
+        return;
     }
+
+    if (mission.IsCompleted)
+    {
+        Console.WriteLine("Mission already completed!");
+        return;
+    }
+
+    mission.IsCompleted = true;
+    Console.WriteLine($"✅ Mission '{mission.Title}' completed successfully!");
+
+    // Fråga om nya missions
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine("Jarvis: Do you want me to generate new missions for you? (yes/no)");
+    Console.ResetColor();
+
+    string answer = Console.ReadLine()?.Trim().ToLower();
+    if (answer == "yes")
+    {
+        int count = 0;
+        while (true)
+        {
+            Console.WriteLine("How many new missions would you like? (1-5)");
+            string input = Console.ReadLine();
+            if (int.TryParse(input, out count) && count >= 1 && count <= 5)
+                break;
+            Console.WriteLine("Invalid number, please enter 1, 2, 3, 4 or 5.");
+        }
+
+        // Hämta missions från AI
+        var newMissions = await JarvisMissionFinder.GetMissionSuggestion(hero.Username, count);
+
+        // Lägg till i missions-listan
+        foreach (var m in newMissions)
+        {
+            missions.Add(new MissionManagement(
+                title: m,
+                description: $"Mission for {hero.Username}",
+                dueDate: DateTime.Now.AddDays(3),
+                priority: "Medium",
+                avengerRole: hero.Username
+            ));
+        }
+
+        // Visa i konsolen
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"Jarvis: I've generated {newMissions.Count} new missions for {hero.Username}!");
+        Console.ResetColor();
+
+        foreach (var m in newMissions)
+        {
+            Console.WriteLine($"- {m}");
+        }
+
+        // Skicka mejl om användaren har email
+        if (!string.IsNullOrWhiteSpace(hero.Email))
+        {
+            JarvisNotifier.SendEmailNotification(
+                hero.Email,
+                "New Missions from S.H.I.E.L.D.",
+                $"You have {newMissions.Count} new missions to complete. Check your S.H.I.E.L.D. account!"
+            );
+        }
+    }
+}
 
     public static void UpdateMission(AvengersProfile hero)
     {

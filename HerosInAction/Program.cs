@@ -20,16 +20,17 @@ class Program
                 switch (choice)
                 {
                     case "1":
-                        await AvengersProfile.CreateUsernameAsync(); // 🔹 async Jarvis-versionen
+                        // 🔹 Registrering med Jarvis, 2FA och telefonnummer sparas
+                        await AvengersProfile.CreateUsernameAsync(); 
                         break;
 
                     case "2":
                         currentHero = AvengersProfile.LoggedIn();
                         break;
 
-                    case "3":
+                    case "7": // 🔹 Exit
                         Console.WriteLine("Good Bye mighty hero!!!");
-                        isRunning = false; // 🔹 Lägg till så programmet faktiskt avslutas
+                        isRunning = false;
                         break;
 
                     default:
@@ -53,7 +54,8 @@ class Program
                         break;
 
                     case "3":
-                        MissionManagement.CompleteMission(currentHero);
+                        // 🔹 CompleteMission nu med AI-generering + SMS-notis
+                        await MissionManagement.CompleteMission(currentHero);
                         break;
 
                     case "4":
