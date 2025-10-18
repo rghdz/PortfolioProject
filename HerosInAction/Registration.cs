@@ -19,63 +19,86 @@ public class AvengersProfile
         TwoFactorAuthen = twoFactorAuthen;
     }
 
-    public static void CreateUsername()
+    public static async Task CreateUsernameAsync()
     {
-        List<string> avengerRoles = new List<string>
+        Console.WriteLine("Before you choose an Avenger identity, Jarvis will analyze your personality...");
+        string suggestedRole = JarvisRoleMatcher.SuggestRole(); // <-- Ny metod (läggs till i separat fil)
+
+        Console.WriteLine($"\nDo you want to register as {suggestedRole}? (y/n)");
+        string answer = Console.ReadLine()?.ToLower();
+
+        string username;
+
+        if (answer == "y")
         {
-            "Iron Man",
-            "Thor",
-            "Captain America",
-            "Hulk",
-            "Black Widow",
-            "Spider Man",
-            "Hawkeye",
-            "Doctor Strange"
-        };
-        Console.WriteLine("Create your Avenger Profile to begin: ");
-
-        string username = null;
-        while (string.IsNullOrWhiteSpace(username))
+            // Om användaren accepterar Jarvis förslag direkt
+            username = suggestedRole;
+        }
+        else
         {
-            Console.WriteLine("Available Avengers: ");
-            for (int i = 0; i < avengerRoles.Count; i++)
+            // 🧠 Annars går vi vidare till din gamla kod för manuell rollval
+            List<string> avengerRoles = new List<string>
             {
-                bool taken = registeredUsers.Any(u => u.Username.Equals(avengerRoles[i], StringComparison.OrdinalIgnoreCase));
-                Console.WriteLine($"{i + 1}. {avengerRoles[i]} {(taken ? "- Taken" : " ")}");
-            }
+                "Iron Man",
+                "Thor",
+                "Captain America",
+                "Hulk",
+                "Black Widow",
+                "Spider Man",
+                "Hawkeye",
+                "Doctor Strange"
+            };
 
-            Console.WriteLine("Enter the number of which Avenger you want to be: ");
-            string input = Console.ReadLine();
-            if (!int.TryParse(input, out int choice) || choice < 1 || choice > avengerRoles.Count)
+            username = null;
+            while (string.IsNullOrWhiteSpace(username))
             {
-                Console.WriteLine("Invalid choice, try again!");
-                continue;
-            }
+                Console.WriteLine("Available Avengers: ");
+                for (int i = 0; i < avengerRoles.Count; i++)
+                {
+                    bool taken = registeredUsers.Any(u => u.Username.Equals(avengerRoles[i], StringComparison.OrdinalIgnoreCase));
+                    Console.WriteLine($"{i + 1}. {avengerRoles[i]} {(taken ? "- Taken" : " ")}");
+                }
 
-            string chosenAvenger = avengerRoles[choice - 1];
-            bool alreadyTaken = registeredUsers.Any(u => u.Username.Equals(chosenAvenger, StringComparison.OrdinalIgnoreCase));
+                Console.WriteLine("Enter the number of which Avenger you want to be: ");
+                string input = Console.ReadLine();
 
-            if (alreadyTaken)
-            {
-                Console.WriteLine($"Sorry {chosenAvenger} is already taken! Choose another one!");
-            }
-            else
-            {
-                username = chosenAvenger;
-            }
+                if (!int.TryParse(input, out int choice) || choice < 1 || choice > avengerRoles.Count)
+                {
+                    Console.WriteLine("Invalid choice, try again!");
+                    continue;
+                }
 
-        } while (string.IsNullOrWhiteSpace(username));
-        Console.WriteLine($"Welcome {username}, now we continue to password! ");
+                string chosenAvenger = avengerRoles[choice - 1];
+                bool alreadyTaken = registeredUsers.Any(u => u.Username.Equals(chosenAvenger, StringComparison.OrdinalIgnoreCase));
+
+                if (alreadyTaken)
+                {
+                    Console.WriteLine($"Sorry {chosenAvenger} is already taken! Choose another one!");
+                }
+                else
+                {
+                    username = chosenAvenger;
+                }
+
+            }
+        }
+        var jarvis = new JarvisChat();
+        string aiResponse = await jarvis.AskJarvisAsync($"Användaren valde rollen {username}. Ge en kort, rolig och inspirerande kommentar som Jarvis, på svenska.");
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine($"Jarvis (AI): {aiResponse}");
+        Console.ResetColor();
+        
+        
+        Console.WriteLine($"Welcome {username}, now we continue to password!");
         string password = CreatePassword();
 
         string phoneNumber;
         do
         {
-            Console.WriteLine("Enter you phone number with +46 to get a verification code please: ");
+            Console.WriteLine("Enter your phone number with +46 to get a verification code please:");
             phoneNumber = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 Console.WriteLine("You need to write in your phone number to continue.");
-
         } while (string.IsNullOrWhiteSpace(phoneNumber));
 
         bool verified = TwoFactorCheck(phoneNumber);
@@ -86,7 +109,7 @@ public class AvengersProfile
         }
 
         registeredUsers.Add(new AvengersProfile(username, password, phoneNumber));
-        Console.WriteLine($"Congrats! Avenger created succesfully, {username}!");
+        Console.WriteLine($"Congrats! Avenger created successfully, {username}!");  
     }
 
 
