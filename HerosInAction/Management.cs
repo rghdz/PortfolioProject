@@ -6,13 +6,13 @@ public class MissionManagement
     public static List<MissionManagement> missions = new List<MissionManagement>()
     {
         new MissionManagement("Retrieve Infinity Stones before Thanos", "Tony Stark must Collect all Infinity stones from Hisingen, Vasa, Frölunda, Angered, Göteborg Centrum.", new DateTime(2025, 10, 20, 13, 0, 0), "High", "Iron Man"),
-        new MissionManagement("Stop alien drones over Liseberg", "Thor must stop a fleet of small alien drones hovering over the amusement park Liseberg.", new DateTime(2025, 10, 18, 11, 0, 0), "High", "Thor"),
-        new MissionManagement("Evacuate civillians from Nordstan", "Lead the evacuation of civilians from Nordstan during a alien invasion.", new DateTime(2025, 10, 5, 12, 0, 0), "High", "Captain America"),
-        new MissionManagement("Crush Chitauri Leviathans at Slottskogen", "Hulk must deal with giant alien robots attacking on Slottskogen Park.", new DateTime(2025, 10, 8, 14, 0, 0), "High", "Hulk"),
-        new MissionManagement("Protect NBI/Handelsakademin", "Defend NBI from the incoming enemy army.", new DateTime(2025, 10, 2, 15, 30, 0), "Medium", "Black Widow"),
-        new MissionManagement("Investigate Strange Activity", "Investigate mysterious magical activity in Opera.", new DateTime(2025, 10, 15, 9, 0, 0), "Low", "Spider Man"),
+        new MissionManagement("Stop alien drones over Liseberg", "Thor must stop a fleet of small alien drones hovering over the amusement park Liseberg.", new DateTime(2025, 10, 21, 11, 0, 0), "High", "Thor"),
+        new MissionManagement("Evacuate civillians from Nordstan", "Lead the evacuation of civilians from Nordstan during a alien invasion.", new DateTime(2025, 10, 22, 12, 0, 0), "High", "Captain America"),
+        new MissionManagement("Crush Chitauri Leviathans at Slottskogen", "Hulk must deal with giant alien robots attacking on Slottskogen Park.", new DateTime(2025, 10, 23, 14, 0, 0), "High", "Hulk"),
+        new MissionManagement("Protect NBI/Handelsakademin", "Defend NBI from the incoming enemy army.", new DateTime(2025, 10, 24, 15, 30, 0), "Medium", "Black Widow"),
+        new MissionManagement("Investigate Strange Activity", "Investigate mysterious magical activity in Opera.", new DateTime(2025, 10, 25, 9, 0, 0), "Low", "Spider Man"),
         new MissionManagement("Escort VIPs", "Protect important civilians during evacuation.", new DateTime(2025, 10, 12, 14, 0, 0), "Medium", "Hawkeye"),
-        new MissionManagement("Seal dimentional rift over Karla tower", "Strange must close a magical rift above the Karla tower before aliens come through.", new DateTime(2025, 1, 12, 1, 0, 0), "Medium", "Doctor Strange")
+        new MissionManagement("Seal dimentional rift over Karla tower", "Strange must close a magical rift above the Karla tower before aliens come through.", new DateTime(2025, 1, 20, 1, 0, 0), "Medium", "Doctor Strange")
     };
 
     // Dictionary för att hålla poäng per hjälte
