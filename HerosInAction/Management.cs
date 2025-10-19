@@ -121,63 +121,76 @@ public class MissionManagement
     // Markerar mission som completed och ger poäng
     public static async Task CompleteMission(AvengersProfile hero)
     {
-        var mission = GetMissionForAvenger(hero.Username);
-        if (missions == null || mission == null)
+        // Hämta alla missions för hjälten som inte är completed
+        var heroMissions = missions
+            .Where(m => m.AvengerRole.Equals(hero.Username, StringComparison.OrdinalIgnoreCase) && !m.IsCompleted)
+            .ToList();
+
+        if (heroMissions.Count == 0)
         {
-            Console.WriteLine("No missions to complete!");
+            JarvisHelper.Write("You have no missions to complete!");
             return;
         }
 
-        if (mission.IsCompleted)
+        // Lista alla missions med index
+        Console.WriteLine("Here are your missions:");
+        for (int i = 0; i < heroMissions.Count; i++)
         {
-            Console.WriteLine("Mission already completed!");
-            return;
+            var m = heroMissions[i];
+            Console.WriteLine($"{i + 1}. {m.Title} | Priority: {m.Priority} | Due: {m.DueDate:yyyy-MM-dd HH:mm}");
         }
 
-        // Markerar mission som klar
-        mission.IsCompleted = true;
-        Console.WriteLine($"Mission '{mission.Title}' completed successfully!");
-
-        // Bestämmer baspoäng beroende på prioritet
-        int basePoints = mission.Priority.ToLower() switch
+        int selectedIndex = -1;
+        while (true)
         {
-            "low" => 5,
-            "medium" => 12,
-            "high" => 25,
-            _ => 5
+            JarvisHelper.Write("Which mission do you want to mark as completed? Enter the number:");
+            string input = Console.ReadLine();
+            if (int.TryParse(input, out selectedIndex) && selectedIndex >= 1 && selectedIndex <= heroMissions.Count)
+            {
+                selectedIndex -= 1; // 0-baserad lista
+                break;
+            }
+            JarvisHelper.Write("Invalid choice. Please enter a valid number.");
+        }
+
+        var missionToComplete = heroMissions[selectedIndex];
+        missionToComplete.IsCompleted = true;
+
+        // Ge poäng baserat på priority
+        int pointsAwarded = missionToComplete.Priority switch
+        {
+            "High" => 10,
+            "Medium" => 5,
+            "Low" => 2,
+            _ => 0
         };
 
-        // Bonuspoäng beroende på hur många dagar kvar till deadline
-        int daysLeft = Math.Max(0, (mission.DueDate - DateTime.Now).Days);
-        int timeBonus = daysLeft * 2;
-
-        int totalPoints = basePoints + timeBonus;
-
-        // Uppdaterar poäng för hjälten
         if (!heroPoints.ContainsKey(hero.Username))
             heroPoints[hero.Username] = 0;
 
-        heroPoints[hero.Username] += totalPoints;
+        heroPoints[hero.Username] += pointsAwarded;
 
-        Console.WriteLine($"You earned {totalPoints} points for this mission! Total points: {heroPoints[hero.Username]}");
+        JarvisHelper.Write($"Mission '{missionToComplete.Title}' completed! You earned {pointsAwarded} points. Total points: {heroPoints[hero.Username]}");
 
-        // Frågar om användaren vill ha nya missions
-        Console.WriteLine("Jarvis: Do you want me to generate new missions for you? (yes/no)");
+        // Fråga om nya missions
+        JarvisHelper.Write("Do you want me to generate new missions for you? (yes/no)");
         string answer = Console.ReadLine()?.Trim().ToLower();
         if (answer == "yes")
         {
             int count = 0;
             while (true)
             {
-                Console.WriteLine("How many new missions would you like? (1-5)");
-                string input = Console.ReadLine();
-                if (int.TryParse(input, out count) && count >= 1 && count <= 5)
+                JarvisHelper.Write("How many new missions would you like? (1-5)");
+                string numInput = Console.ReadLine();
+                if (int.TryParse(numInput, out count) && count >= 1 && count <= 5)
                     break;
-                Console.WriteLine("Invalid number, please enter 1, 2, 3, 4 or 5.");
+                JarvisHelper.Write("Invalid number, please enter 1-5.");
             }
 
+            // Hämta nya missions från AI
             var newMissions = await JarvisMissionFinder.GetMissionSuggestion(hero.Username, count);
 
+            // Lägg till nya missions i listan, alla startar som incomplete
             foreach (var m in newMissions)
             {
                 missions.Add(new MissionManagement(
@@ -189,12 +202,15 @@ public class MissionManagement
                 ));
             }
 
-            Console.WriteLine($"Jarvis generated {newMissions.Count} new missions for {hero.Username}!");
+            JarvisHelper.Write($"I've generated {newMissions.Count} new missions for {hero.Username}!");
+
+            // Visa nya missions
             foreach (var m in newMissions)
             {
                 Console.WriteLine($"- {m}");
             }
 
+            // Skicka email om användaren har email
             if (!string.IsNullOrWhiteSpace(hero.Email))
             {
                 JarvisNotifier.SendEmailNotification(
@@ -205,7 +221,16 @@ public class MissionManagement
             }
         }
     }
-
+    public static class JarvisHelper
+    {
+        // Allt Jarvis-meddelande går via denna metod → alltid rött
+        public static void Write(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Jarvis: {message}");
+            Console.ResetColor();
+        }
+    }
     // Uppdaterar anteckning för mission
     public static void UpdateMission(AvengersProfile hero)
     {
