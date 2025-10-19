@@ -2,6 +2,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 public class MissionManagement
 {
+    // Lista med alla mission i systemet
     public static List<MissionManagement> missions = new List<MissionManagement>()
     {
         new MissionManagement("Retrieve Infinity Stones before Thanos", "Tony Stark must Collect all Infinity stones from Hisingen, Vasa, Frölunda, Angered, Göteborg Centrum.", new DateTime(2025, 10, 20, 13, 0, 0), "High", "Iron Man"),
@@ -14,6 +15,11 @@ public class MissionManagement
         new MissionManagement("Seal dimentional rift over Karla tower", "Strange must close a magical rift above the Karla tower before aliens come through.", new DateTime(2025, 1, 12, 1, 0, 0), "Medium", "Doctor Strange")
     };
 
+    // Dictionary för att hålla poäng per hjälte
+    public static Dictionary<string, int> heroPoints = new Dictionary<string, int>();
+
+    // Hämtar uppdrag för en viss hjälte baserat på rollen (ex. Iron Man)
+    // Hämtar första mission som matchar hjälten och som inte är completed
     public static MissionManagement? GetMissionForAvenger(string avengerRole)
     {
         if (string.IsNullOrWhiteSpace(avengerRole) || missions == null || missions.Count == 0)
@@ -21,9 +27,12 @@ public class MissionManagement
 
         string roleTrimmed = avengerRole.Trim();
 
-        return missions.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.AvengerRole) && m.AvengerRole.Trim().Equals(avengerRole.Trim(), StringComparison.OrdinalIgnoreCase) && !m.IsCompleted);
+        return missions.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.AvengerRole) &&
+                                           m.AvengerRole.Trim().Equals(roleTrimmed, StringComparison.OrdinalIgnoreCase) &&
+                                           !m.IsCompleted);
     }
 
+    // Fält för ett mission
     public string Title;
     public string Description;
     public DateTime DueDate;
@@ -32,6 +41,7 @@ public class MissionManagement
     public string AvengerRole;
     public string HeroNote;
 
+    // Konstruktor för att skapa ett nytt mission
     public MissionManagement(string title, string description, DateTime dueDate, string priority, string avengerRole, bool isCompleted = false, string heroNote = "")
     {
         Title = title;
@@ -43,6 +53,7 @@ public class MissionManagement
         HeroNote = heroNote;
     }
 
+    // Lägger till nytt mission manuellt
     public static void AddMission()
     {
         Console.WriteLine("Which mission would you like to add?");
@@ -69,7 +80,7 @@ public class MissionManagement
         Console.WriteLine($"Mission '{title}' added successfully!!");
     }
 
-
+    // Visar första mission för en hjälte
     public static void ShowMissionforAvenger(AvengersProfile hero)
     {
         var mission = GetMissionForAvenger(hero.Username);
@@ -88,6 +99,7 @@ public class MissionManagement
         }
     }
 
+    // Visar alla mission i systemet
     public static void ShowAllMissions()
     {
         if (missions.Count == 0)
@@ -106,79 +118,95 @@ public class MissionManagement
         Console.WriteLine();
     }
 
-public static async Task CompleteMission(AvengersProfile hero)
-{
-    var mission = GetMissionForAvenger(hero.Username);
-    if (missions == null || mission == null)
+    // Markerar mission som completed och ger poäng
+    public static async Task CompleteMission(AvengersProfile hero)
     {
-        Console.WriteLine("No missions to complete!");
-        return;
+        var mission = GetMissionForAvenger(hero.Username);
+        if (missions == null || mission == null)
+        {
+            Console.WriteLine("No missions to complete!");
+            return;
+        }
+
+        if (mission.IsCompleted)
+        {
+            Console.WriteLine("Mission already completed!");
+            return;
+        }
+
+        // Markerar mission som klar
+        mission.IsCompleted = true;
+        Console.WriteLine($"Mission '{mission.Title}' completed successfully!");
+
+        // Bestämmer baspoäng beroende på prioritet
+        int basePoints = mission.Priority.ToLower() switch
+        {
+            "low" => 5,
+            "medium" => 12,
+            "high" => 25,
+            _ => 5
+        };
+
+        // Bonuspoäng beroende på hur många dagar kvar till deadline
+        int daysLeft = Math.Max(0, (mission.DueDate - DateTime.Now).Days);
+        int timeBonus = daysLeft * 2;
+
+        int totalPoints = basePoints + timeBonus;
+
+        // Uppdaterar poäng för hjälten
+        if (!heroPoints.ContainsKey(hero.Username))
+            heroPoints[hero.Username] = 0;
+
+        heroPoints[hero.Username] += totalPoints;
+
+        Console.WriteLine($"You earned {totalPoints} points for this mission! Total points: {heroPoints[hero.Username]}");
+
+        // Frågar om användaren vill ha nya missions
+        Console.WriteLine("Jarvis: Do you want me to generate new missions for you? (yes/no)");
+        string answer = Console.ReadLine()?.Trim().ToLower();
+        if (answer == "yes")
+        {
+            int count = 0;
+            while (true)
+            {
+                Console.WriteLine("How many new missions would you like? (1-5)");
+                string input = Console.ReadLine();
+                if (int.TryParse(input, out count) && count >= 1 && count <= 5)
+                    break;
+                Console.WriteLine("Invalid number, please enter 1, 2, 3, 4 or 5.");
+            }
+
+            var newMissions = await JarvisMissionFinder.GetMissionSuggestion(hero.Username, count);
+
+            foreach (var m in newMissions)
+            {
+                missions.Add(new MissionManagement(
+                    title: m,
+                    description: $"Mission for {hero.Username}",
+                    dueDate: DateTime.Now.AddDays(3),
+                    priority: "Medium",
+                    avengerRole: hero.Username
+                ));
+            }
+
+            Console.WriteLine($"Jarvis generated {newMissions.Count} new missions for {hero.Username}!");
+            foreach (var m in newMissions)
+            {
+                Console.WriteLine($"- {m}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(hero.Email))
+            {
+                JarvisNotifier.SendEmailNotification(
+                    hero.Email,
+                    "New Missions from S.H.I.E.L.D.",
+                    $"You have {newMissions.Count} new missions to complete. Check your S.H.I.E.L.D. account!"
+                );
+            }
+        }
     }
 
-    if (mission.IsCompleted)
-    {
-        Console.WriteLine("Mission already completed!");
-        return;
-    }
-
-    mission.IsCompleted = true;
-    Console.WriteLine($"✅ Mission '{mission.Title}' completed successfully!");
-
-    // Fråga om nya missions
-    Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine("Jarvis: Do you want me to generate new missions for you? (yes/no)");
-    Console.ResetColor();
-
-    string answer = Console.ReadLine()?.Trim().ToLower();
-    if (answer == "yes")
-    {
-        int count = 0;
-        while (true)
-        {
-            Console.WriteLine("How many new missions would you like? (1-5)");
-            string input = Console.ReadLine();
-            if (int.TryParse(input, out count) && count >= 1 && count <= 5)
-                break;
-            Console.WriteLine("Invalid number, please enter 1, 2, 3, 4 or 5.");
-        }
-
-        // Hämta missions från AI
-        var newMissions = await JarvisMissionFinder.GetMissionSuggestion(hero.Username, count);
-
-        // Lägg till i missions-listan
-        foreach (var m in newMissions)
-        {
-            missions.Add(new MissionManagement(
-                title: m,
-                description: $"Mission for {hero.Username}",
-                dueDate: DateTime.Now.AddDays(3),
-                priority: "Medium",
-                avengerRole: hero.Username
-            ));
-        }
-
-        // Visa i konsolen
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"Jarvis: I've generated {newMissions.Count} new missions for {hero.Username}!");
-        Console.ResetColor();
-
-        foreach (var m in newMissions)
-        {
-            Console.WriteLine($"- {m}");
-        }
-
-        // Skicka mejl om användaren har email
-        if (!string.IsNullOrWhiteSpace(hero.Email))
-        {
-            JarvisNotifier.SendEmailNotification(
-                hero.Email,
-                "New Missions from S.H.I.E.L.D.",
-                $"You have {newMissions.Count} new missions to complete. Check your S.H.I.E.L.D. account!"
-            );
-        }
-    }
-}
-
+    // Uppdaterar anteckning för mission
     public static void UpdateMission(AvengersProfile hero)
     {
         var mission = GetMissionForAvenger(hero.Username);
@@ -192,30 +220,58 @@ public static async Task CompleteMission(AvengersProfile hero)
         {
             Console.WriteLine($"Current note: {mission.HeroNote}");
         }
-        Console.WriteLine("Would you like to add or update a reminder/comment for this mission?");
-        Console.WriteLine("Write your note here or leave blank if you don't feel like it:");
+        Console.WriteLine("Write your note here or leave blank:");
         string newNote = Console.ReadLine();
 
         if (!string.IsNullOrWhiteSpace(newNote))
         {
             mission.HeroNote = newNote;
-            Console.WriteLine("Your personal note has been saved!");
+            Console.WriteLine("Your note has been saved!");
         }
         else
         {
-            Console.WriteLine("No noote added!");
+            Console.WriteLine("No note added!");
         }
-
     }
 
+    // Loggar ut hjälten
     public static void LogOut(AvengersProfile currentHero)
     {
         Console.Clear();
         Console.WriteLine($"Avenger {currentHero.Username} has logged out!");
         Thread.Sleep(1500);
-
     }
 
+    // Visar rapport med alla missions och status
+    public static void ShowMissionReport(AvengersProfile hero)
+    {
+        Console.WriteLine($"Mission Report for {hero.Username}");
+        Console.WriteLine("---------------------------------------------");
+
+        var userMissions = missions.Where(m => m.AvengerRole == hero.Username).ToList();
+
+        if (userMissions.Count == 0)
+        {
+            Console.WriteLine("No missions found for this hero.");
+            return;
+        }
+
+        foreach (var m in userMissions)
+        {
+            int daysLeft = (m.DueDate - DateTime.Now).Days;
+            string status = m.IsCompleted ? "Completed" : (daysLeft < 0 ? "Overdue" : "Active");
+
+            Console.WriteLine($"Title: {m.Title}");
+            Console.WriteLine($"Due: {m.DueDate:yyyy-MM-dd}");
+            Console.WriteLine($"Days left: {daysLeft}");
+            Console.WriteLine($"Status: {status}");
+            int pointsForHero = heroPoints.ContainsKey(hero.Username) ? heroPoints[hero.Username] : 0;
+            Console.WriteLine($"Hero total points: {pointsForHero}");
+            Console.WriteLine("---------------------------------------------");
+        }
+    }
+
+    // Visar meny för inloggad hjälte
     public static void ShowLoggedInMenu(AvengersProfile currentHero)
     {
         Console.WriteLine($"Welcome, {currentHero.Username}");
@@ -225,7 +281,8 @@ public static async Task CompleteMission(AvengersProfile hero)
         Console.WriteLine("2. Show all missions: ");
         Console.WriteLine("3. Complete mission: ");
         Console.WriteLine("4. Update mission / Add note: ");
-        Console.WriteLine("5. Logout: ");
+        Console.WriteLine("5. Show mission report: ");
+        Console.WriteLine("6. Logout: ");
         Console.Write("Choose an option: ");
     }
 }

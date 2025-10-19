@@ -1,15 +1,12 @@
 using MailKit.Net.Smtp;
 using MimeKit;
-using dotenv.net;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
-
+// Jarvis logik för att matcha användare med rätt Avenger-roll
 public static class JarvisRoleMatcher
 {
+    // Skriver ut meddelande från Jarvis med röd färg
     public static void JarvisWrite(string message)
     {
         Console.ForegroundColor = ConsoleColor.Red;
@@ -17,6 +14,7 @@ public static class JarvisRoleMatcher
         Console.ResetColor();
     }
 
+    // Frågar användaren och föreslår en roll baserat på svar
     public static string SuggestRole()
     {
         JarvisWrite("Greetings, new Avenger. Please answer the questions so we can determine the best matching role for you.");
@@ -30,12 +28,14 @@ public static class JarvisRoleMatcher
         Console.WriteLine("Would you rather use (1) Magic, (2) Gadgets, or (3) Strength?");
         string q3 = Console.ReadLine()?.Trim();
 
+        // Bestämmer roll baserat på svaren
         string suggestedRole = MatchRole(q1, q2, q3);
 
+        // Om Iron Man redan är vald, föreslå Doctor Strange istället
         if (suggestedRole == "Iron Man")
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("🦾 Jarvis: Excellent choice... however, Iron Man is already taken.");
+            Console.WriteLine("Jarvis: Excellent choice... however, Iron Man is already taken.");
             Console.WriteLine("Let’s find another hero with similar brilliance...");
             suggestedRole = "Doctor Strange";
             Console.ResetColor();
@@ -46,6 +46,7 @@ public static class JarvisRoleMatcher
         return suggestedRole;
     }
 
+    // Matchar svaren till en specifik Avenger-roll
     private static string MatchRole(string q1, string q2, string q3)
     {
         if (q1 == "1" && q2 == "1" && q3 == "2") return "Iron Man";
@@ -59,25 +60,29 @@ public static class JarvisRoleMatcher
     }
 }
 
+// Jarvis AI som genererar missions baserat på hjälte
 public static class JarvisMissionFinder
 {
+    // Returnerar en lista med mission-förslag från Jarvis
     public static async Task<List<string>> GetMissionSuggestion(string heroName, int missionCount)
     {
         var jarvis = new JarvisChat();
 
+        // Skapar prompt till AI
         string prompt = $"Generate {missionCount} short and creative missions for the Avenger {heroName}. " +
                         "Each mission should fit their abilities and personality, and be written in one or two sentences. " +
                         "List each mission on a new line starting with 1., 2., etc.";
 
+        // Får svar från AI
         string result = await jarvis.AskJarvisAsync(prompt);
 
-        // Split lines och ta bort tomma rader
+        // Delar upp svar i rader och tar bort tomma
         var lines = result.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                           .Select(l => l.Trim())
                           .Where(l => !string.IsNullOrWhiteSpace(l))
                           .ToList();
 
-        // Extrahera de faktiska missions som börjar med nummer
+        // Extraherar texten på missions som börjar med nummer
         var missions = new List<string>();
         var regex = new Regex(@"^\d+\.\s*(.*)$"); // matchar "1. Mission text"
         foreach (var line in lines)
@@ -93,43 +98,42 @@ public static class JarvisMissionFinder
     }
 }
 
+// Jarvis notifierar användaren via email om nya missions
 public static class JarvisNotifier
 {
     public static void SendEmailNotification(string toEmail, string subject, string body)
     {
-        // 🔹 Konfigurera User Secrets + miljövariabler
+        // Laddar miljövariabler för email
         var config = new ConfigurationBuilder()
-            .AddUserSecrets<Program>()   // laddar user secrets
-            .AddEnvironmentVariables()   // laddar systemets miljövariabler
+            .AddUserSecrets<Program>()
+            .AddEnvironmentVariables()
             .Build();
 
         string fromEmail = config["JARVIS_EMAIL"];
         string appPassword = config["JARVIS_APP_PASSWORD"];
 
-        Console.WriteLine($"fromEmail={fromEmail}");
-        Console.WriteLine($"appPassword={(string.IsNullOrEmpty(appPassword) ? "NOT FOUND" : "FOUND")}");
-
+        // Kontrollerar att credentials finns
         if (string.IsNullOrWhiteSpace(fromEmail) || string.IsNullOrWhiteSpace(appPassword))
         {
-            Console.WriteLine("⚠️ Jarvis: Missing email credentials. Cannot send email!");
+            Console.WriteLine("Jarvis: Missing email credentials. Cannot send email!");
             return;
         }
 
-        // Skapa mejlet
+        // Skapar email-meddelande
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Jarvis", fromEmail));
         message.To.Add(new MailboxAddress("", toEmail));
         message.Subject = subject;
         message.Body = new TextPart("plain") { Text = body };
 
-        // Anslut till SMTP-server
+        // Skickar email via SMTP
         using var client = new SmtpClient();
         client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-        client.Authenticate(fromEmail, appPassword);  
-
+        client.Authenticate(fromEmail, appPassword);
         client.Send(message);
         client.Disconnect(true);
 
+        // Bekräftar skickat mail
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("Jarvis: Notification email sent successfully!");
         Console.ResetColor();

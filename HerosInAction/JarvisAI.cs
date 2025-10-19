@@ -5,11 +5,13 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using dotenv.net;
 
+// Jarvis AI som hanterar konversationer och svar till användaren
 public class JarvisChat
 {
     private static readonly HttpClient client = new HttpClient();
     private readonly string apiKey;
 
+    // Konstruktor laddar miljövariabler och API-nyckel
     public JarvisChat()
     {
         DotEnv.Load();
@@ -17,11 +19,12 @@ public class JarvisChat
             ?? throw new Exception("OPENAI_API_KEY not found");
     }
 
+    // Skickar fråga till OpenAI och returnerar Jarvis svar
     public async Task<string> AskJarvisAsync(string userMessage)
     {
         var requestData = new
         {
-            model = "gpt-4o-mini", // eller "gpt-4o" om du vill ha full version
+            model = "gpt-4o-mini",
             messages = new[]
             {
                 new { role = "system", content = "You are Jarvis, a witty and intelligent AI assistant who helps users discover their ideal Avenger role and find suitable missions. Always respond with charm and confidence." },
@@ -29,14 +32,17 @@ public class JarvisChat
             }
         };
 
+        // Serialiserar request till JSON
         var json = JsonSerializer.Serialize(requestData);
         var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
         request.Headers.Add("Authorization", $"Bearer {apiKey}");
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
+        // Skickar request
         var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
+        // Läser svar och extraherar innehållet
         var responseBody = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(responseBody);
         var content = doc.RootElement
@@ -47,6 +53,8 @@ public class JarvisChat
 
         return content;
     }
+
+    // Skriver ut Jarvis med röd färg
     public void PrintJarvis(string message)
     {
         Console.ForegroundColor = ConsoleColor.Red;

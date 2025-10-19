@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-class Program
+﻿class Program
 {
     static async Task Main(string[] args)
     {
@@ -14,21 +11,24 @@ class Program
         {
             if (currentHero == null)
             {
+                // Visar huvudmeny för användaren
                 AvengersProfile.ShowMainMenu();
                 string choice = Console.ReadLine();
 
                 switch (choice)
                 {
                     case "1":
-                        // 🔹 Registrering med Jarvis, 2FA och telefonnummer sparas
-                        await AvengersProfile.CreateUsernameAsync(); 
+                        // Registrera ny hjälte med Jarvis
+                        await AvengersProfile.CreateUsernameAsync();
                         break;
 
                     case "2":
+                        // Logga in befintlig hjälte
                         currentHero = AvengersProfile.LoggedIn();
                         break;
 
-                    case "7": // 🔹 Exit
+                    case "3":
+                        // Avslutar programmet
                         Console.WriteLine("Good Bye mighty hero!!!");
                         isRunning = false;
                         break;
@@ -40,29 +40,39 @@ class Program
             }
             else
             {
+                // Visar menyn för inloggad hjälte
                 MissionManagement.ShowLoggedInMenu(currentHero);
                 string heroChoice = Console.ReadLine();
 
                 switch (heroChoice)
                 {
                     case "1":
+                        // Lägg till nytt mission manuellt
                         MissionManagement.AddMission();
                         break;
 
                     case "2":
+                        // Visa alla missions
                         MissionManagement.ShowAllMissions();
                         break;
 
                     case "3":
-                        // 🔹 CompleteMission nu med AI-generering + SMS-notis
+                        // Complete mission, ger poäng och möjlighet till nya missions
                         await MissionManagement.CompleteMission(currentHero);
                         break;
 
                     case "4":
+                        // Uppdatera mission / lägg till anteckning
                         MissionManagement.UpdateMission(currentHero);
                         break;
 
                     case "5":
+                        // Visa missionrapport med status och poäng
+                        MissionManagement.ShowMissionReport(currentHero);
+                        break;
+
+                    case "6":
+                        // Logga ut hjälten
                         MissionManagement.LogOut(currentHero);
                         currentHero = null;
                         break;
@@ -77,70 +87,3 @@ class Program
         }
     }
 }
-
-
-// Console.Clear();
-
-// bool isRunning = true;
-// AvengersProfile currentHero = null;
-// while (isRunning)
-// {
-//     if (currentHero == null)
-//     {
-//         AvengersProfile.ShowMainMenu();
-//         string choice = Console.ReadLine();
-
-//         switch (choice)
-//         {
-//             case "1":
-//                 AvengersProfile.CreateUsername();
-//                 break;
-
-//             case "2":
-//                 currentHero = AvengersProfile.LoggedIn();
-//                 break;
-
-//             case "3":
-//                 Console.WriteLine("Good Bye mighty hero!!!");
-//                 break;
-
-//             default:
-//                 Console.WriteLine("Invalid choice! Try again please!");
-//                 break;
-//         }
-//     }
-//     else
-//     {
-//         MissionManagement.ShowLoggedInMenu(currentHero);
-//         string heroChoice = Console.ReadLine();
-
-//         switch (heroChoice)
-//         {
-//             case "1":
-//                 MissionManagement.AddMission();
-//                 break;
-
-//             case "2":
-//                 MissionManagement.ShowAllMissions();
-//                 break;
-
-//             case "3":
-//                 MissionManagement.CompleteMission(currentHero);
-//                 break;
-
-//             case "4":
-//                 MissionManagement.UpdateMission(currentHero);
-//                 break;
-
-//             case "5":
-//                 MissionManagement.LogOut(currentHero);
-//                 currentHero = null;
-//                 break;
-
-//             default:
-//                 Console.WriteLine("Invalid choice! Try again please!");
-//                 break;
-//         }
-//     }
-//     Console.WriteLine();
-// }
